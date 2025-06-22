@@ -15,7 +15,7 @@ COPY apps/workers/package.json ./apps/workers/
 COPY apps/cron/package.json ./apps/cron/
 
 # Installer les dépendances
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Copier le reste du code
 COPY . /app
