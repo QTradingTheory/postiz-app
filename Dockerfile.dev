@@ -2,19 +2,37 @@ FROM node:20-alpine3.19
 RUN apk add --no-cache g++ make py3-pip supervisor bash caddy
 RUN npm --no-update-notifier --no-fund --global install pnpm@10.6.1 pm2
 
+# Augmenter la mémoire disponible pour Node.js
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 WORKDIR /app
 
+# Copier d'abord les fichiers de configuration pour optimiser le cache Docker
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/frontend/package.json ./apps/frontend/
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/workers/package.json ./apps/workers/
+COPY apps/cron/package.json ./apps/cron/
+
+# Installer les dépendances
+RUN pnpm install --frozen-lockfile
+
+# Copier le reste du code
 COPY . /app
+
+# Copier les fichiers Docker
 COPY var/docker/supervisord.conf /etc/supervisord.conf
 COPY var/docker/Caddyfile /app/Caddyfile
 COPY var/docker/entrypoint.sh /app/entrypoint.sh
 COPY var/docker/start.sh /app/start.sh
+COPY var/docker/build.sh /app/build.sh
 COPY var/docker/supervisord/caddy.conf /etc/supervisor.d/caddy.conf
 RUN chmod +x /app/entrypoint.sh
 RUN chmod +x /app/start.sh
+RUN chmod +x /app/build.sh
 
-RUN pnpm install
-RUN pnpm run build
+# Build avec le script personnalisé
+RUN /app/build.sh
 
 EXPOSE 4200 3000
 
