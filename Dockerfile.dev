@@ -7,17 +7,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 WORKDIR /app
 
-# Copier d'abord les fichiers de configuration pour optimiser le cache Docker
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/frontend/package.json ./apps/frontend/
-COPY apps/backend/package.json ./apps/backend/
-COPY apps/workers/package.json ./apps/workers/
-COPY apps/cron/package.json ./apps/cron/
-
-# Installer les dépendances
-RUN pnpm install --no-frozen-lockfile
-
-# Copier le reste du code
+# Copier tous les fichiers nécessaires
 COPY . /app
 
 # Copier les fichiers Docker
@@ -30,6 +20,9 @@ COPY var/docker/supervisord/caddy.conf /etc/supervisor.d/caddy.conf
 RUN chmod +x /app/entrypoint.sh
 RUN chmod +x /app/start.sh
 RUN chmod +x /app/build.sh
+
+# Installer les dépendances (maintenant que tous les fichiers sont présents)
+RUN pnpm install --no-frozen-lockfile
 
 # Build avec le script personnalisé
 RUN /app/build.sh
