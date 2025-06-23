@@ -4,6 +4,15 @@ set -e
 
 echo "🚀 Démarrage de l'application Postiz..."
 
+# Afficher les variables d'environnement importantes
+echo "🔧 Variables d'environnement:"
+echo "DATABASE_URL: $DATABASE_URL"
+echo "REDIS_URL: $REDIS_URL"
+echo "NODE_ENV: $NODE_ENV"
+echo "PORT: $PORT"
+echo "BACKEND_PORT: $BACKEND_PORT"
+echo "FRONTEND_PORT: $FRONTEND_PORT"
+
 # Nettoyer les processus PM2 existants
 echo "🧹 Nettoyage des processus PM2 existants..."
 pm2 delete all || true
@@ -26,7 +35,8 @@ counter=0
 while ! nc -z localhost 3000; do
     if [ $counter -ge $timeout ]; then
         echo "❌ Timeout: Le backend n'a pas démarré sur le port 3000"
-        pm2 logs
+        echo "📊 Logs PM2:"
+        pm2 logs --lines 20
         exit 1
     fi
     echo "⏳ Attente du backend... ($counter/$timeout)"
@@ -41,7 +51,8 @@ counter=0
 while ! nc -z localhost 4200; do
     if [ $counter -ge $timeout ]; then
         echo "❌ Timeout: Le frontend n'a pas démarré sur le port 4200"
-        pm2 logs
+        echo "📊 Logs PM2:"
+        pm2 logs --lines 20
         exit 1
     fi
     echo "⏳ Attente du frontend... ($counter/$timeout)"

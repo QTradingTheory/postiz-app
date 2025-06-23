@@ -3,6 +3,30 @@
 # This is only for the dev enviroment
 
 services:
+  postiz-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: postiz-app
+    restart: always
+    ports:
+      - "4200:4200"
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postiz-local:postiz-local-pwd@postiz-postgres:5432/postiz-db-local
+      - REDIS_URL=redis://postiz-redis:6379
+      - NODE_ENV=production
+      - PORT=3000
+      - BACKEND_PORT=3000
+      - FRONTEND_PORT=4200
+    depends_on:
+      - postiz-postgres
+      - postiz-redis
+    networks:
+      - postiz-network
+
   postiz-postgres:
     # ref: https://hub.docker.com/_/postgres
     image: postgres:17-alpine # 17.0

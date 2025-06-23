@@ -21,8 +21,11 @@ RUN chmod +x /app/entrypoint.sh
 RUN chmod +x /app/start.sh
 RUN chmod +x /app/build.sh
 
-# Installer les dépendances (maintenant que tous les fichiers sont présents)
-RUN pnpm install --no-frozen-lockfile
+# Installer les dépendances sans le script postinstall
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
+
+# Générer Prisma manuellement (sans connexion à la DB)
+RUN pnpm run prisma-generate
 
 # Build avec le script personnalisé
 RUN /app/build.sh
