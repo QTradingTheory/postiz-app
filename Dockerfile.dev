@@ -7,31 +7,23 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 WORKDIR /app
 
-# Copier tous les fichiers nécessaires
+# Copier tout le code AVANT d'installer les dépendances
 COPY . /app
 
-# Copier les fichiers Docker
-COPY var/docker/supervisord.conf /etc/supervisord.conf
-COPY var/docker/Caddyfile /app/Caddyfile
-COPY var/docker/entrypoint.sh /app/entrypoint.sh
-COPY var/docker/start.sh /app/start.sh
-COPY var/docker/build.sh /app/build.sh
-COPY var/docker/supervisord/caddy.conf /etc/supervisor.d/caddy.conf
-RUN chmod +x /app/entrypoint.sh
-RUN chmod +x /app/start.sh
-RUN chmod +x /app/build.sh
+# Installer les dépendances AVEC les scripts natifs
+RUN pnpm install --no-frozen-lockfile
 
-# Installer les dépendances sans le script postinstall
-RUN pnpm install --no-frozen-lockfile --ignore-scripts
-
-# Exécuter les scripts nécessaires manuellement
+# Générer les plugins et Prisma
 RUN pnpm run update-plugins
 RUN pnpm run prisma-generate
 
-# Build avec le script personnalisé
+# Build
+COPY var/docker/build.sh /app/build.sh
+RUN chmod +x /app/build.sh
 RUN /app/build.sh
 
 EXPOSE 4200 3000
 
-# Utiliser le script de démarrage personnalisé
+COPY var/docker/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 CMD ["/app/start.sh"]
