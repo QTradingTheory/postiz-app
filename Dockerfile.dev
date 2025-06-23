@@ -24,7 +24,8 @@ RUN chmod +x /app/build.sh
 # Installer les dépendances sans le script postinstall
 RUN pnpm install --no-frozen-lockfile --ignore-scripts
 
-# Générer Prisma manuellement (sans connexion à la DB)
+# Exécuter les scripts nécessaires manuellement
+RUN pnpm run update-plugins
 RUN pnpm run prisma-generate
 
 # Build avec le script personnalisé
