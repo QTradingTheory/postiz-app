@@ -37,6 +37,16 @@ const nextConfig = {
             ? '/api/uploads/:path*'
             : '/404',
       },
+      // Proxy API requests to backend via Caddy
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5000/api/:path*',
+      },
+      // Proxy auth requests to backend via Caddy
+      {
+        source: '/auth/:path*',
+        destination: 'http://localhost:5000/auth/:path*',
+      },
     ];
   },
 };
