@@ -4,15 +4,15 @@
 		reverse_proxy * localhost:3000
 	}
 
+	# Gérer les requêtes auth vers le backend
+	handle_path /auth/* {
+		reverse_proxy * localhost:3000
+	}
+
 	# Gérer les uploads
 	handle_path /uploads/* {
 		root * /uploads/
 		file_server
-	}
-
-	# Gérer les requêtes auth directement
-	handle_path /auth/* {
-		reverse_proxy * localhost:3000
 	}
 
 	# Toutes les autres requêtes vers le frontend

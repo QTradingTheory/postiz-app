@@ -10,7 +10,7 @@ services:
     container_name: postiz-app
     restart: always
     ports:
-      - "80:80"      # Caddy (proxy principal)
+      - "5000:5000"  # Caddy (proxy principal)
       - "4200:4200"  # Frontend direct
       - "3000:3000"  # Backend direct
     env_file:
@@ -24,6 +24,8 @@ services:
       - FRONTEND_PORT=4200
       - FRONTEND_URL=https://postiz.alyenis.com
       - MAIN_URL=https://postiz.alyenis.com
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+      - BACKEND_INTERNAL_URL=http://localhost:3000
     depends_on:
       - postiz-postgres
       - postiz-redis
