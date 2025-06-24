@@ -22,8 +22,11 @@ COPY var/docker/build.sh /app/build.sh
 RUN chmod +x /app/build.sh
 RUN /app/build.sh
 
-EXPOSE 4200 3000
-
+# Copier les fichiers Docker nécessaires
+COPY var/docker/Caddyfile /app/Caddyfile
 COPY var/docker/start.sh /app/start.sh
 RUN chmod +x /app/start.sh
+
+EXPOSE 5000 4200 3000
+
 CMD ["/app/start.sh"]
